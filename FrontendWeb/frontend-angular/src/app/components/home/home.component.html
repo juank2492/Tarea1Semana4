@@ -1,16 +1,56 @@
 <!-- Hero Section -->
 <section class="hero-section">
   <div class="container">
-    <h1 class="display-4 fw-bold mb-3">Bienvenido a Restaurante Delicioso</h1>
-    <p class="lead mb-4">Disfruta de la mejor comida preparada con ingredientes frescos y amor por la gastronomía</p>
-    <div class="d-flex gap-3 justify-content-center">
-      <a routerLink="/menu" class="btn btn-primary btn-lg">
-        <i class="fas fa-utensils me-2"></i>Ver Menú
-      </a>
-      <a routerLink="/reservas" class="btn btn-outline-light btn-lg">
-        <i class="fas fa-calendar-alt me-2"></i>Hacer Reserva
-      </a>
-    </div>
+    @if (authService.currentUser()) {
+      <!-- Mensaje personalizado para usuarios logueados -->
+      <h1 class="display-4 fw-bold mb-3">
+        ¡Bienvenido de nuevo, 
+        @if (authService.currentUser()?.rol === 'Admin') {
+          <span class="text-warning">Administrador</span>
+        } @else {
+          {{ authService.currentUser()?.nombreUsuario }}
+        }!
+      </h1>
+      @if (authService.currentUser()?.rol === 'Admin') {
+        <p class="lead mb-4">Panel de administración - Gestiona tu restaurante desde aquí</p>
+        <div class="d-flex gap-3 justify-content-center">
+          <a routerLink="/app/admin/dashboard" class="btn btn-warning btn-lg">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard Admin
+          </a>
+          <a routerLink="/menu" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-utensils me-2"></i>Ver Menú
+          </a>
+        </div>
+      } @else {
+        <p class="lead mb-4">¿Qué te apetece hoy? Explora nuestro menú y haz tu pedido</p>
+        <div class="d-flex gap-3 justify-content-center">
+          <a routerLink="/menu" class="btn btn-primary btn-lg">
+            <i class="fas fa-utensils me-2"></i>Ver Menú
+          </a>
+          <a routerLink="/reservas" class="btn btn-outline-light btn-lg">
+            <i class="fas fa-calendar-alt me-2"></i>Hacer Reserva
+          </a>
+          <a routerLink="/pedidos" class="btn btn-success btn-lg">
+            <i class="fas fa-shopping-cart me-2"></i>Mis Pedidos
+          </a>
+        </div>
+      }
+    } @else {
+      <!-- Mensaje para visitantes no logueados -->
+      <h1 class="display-4 fw-bold mb-3">Bienvenido a Restaurante Delicioso</h1>
+      <p class="lead mb-4">Disfruta de la mejor comida preparada con ingredientes frescos y amor por la gastronomía</p>
+      <div class="d-flex gap-3 justify-content-center">
+        <a routerLink="/menu" class="btn btn-primary btn-lg">
+          <i class="fas fa-utensils me-2"></i>Ver Menú
+        </a>
+        <a routerLink="/login" class="btn btn-outline-light btn-lg">
+          <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+        </a>
+        <a routerLink="/register" class="btn btn-success btn-lg">
+          <i class="fas fa-user-plus me-2"></i>Registrarse
+        </a>
+      </div>
+    }
   </div>
 </section>
 
@@ -35,7 +75,7 @@
                      [title]="categoria.nombre"
                      class="card-img-top">
               } @else {
-                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center placeholder-image">
                   <i class="fas fa-utensils fa-3x text-muted"></i>
                 </div>
               }
@@ -76,7 +116,7 @@
                      [title]="producto.nombre"
                      class="card-img-top">
               } @else {
-                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center placeholder-image">
                   <i class="fas fa-hamburger fa-3x text-muted"></i>
                 </div>
               }

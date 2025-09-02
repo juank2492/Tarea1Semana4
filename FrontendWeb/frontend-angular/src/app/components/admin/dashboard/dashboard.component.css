@@ -1,0 +1,61 @@
+/* Dashboard Styles */
+.card {
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  border: none;
+}
+
+.card-header {
+  background-color: #f8f9fc;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+.bg-primary {
+  background-color: #4e73df !important;
+}
+
+.bg-success {
+  background-color: #1cc88a !important;
+}
+
+.bg-info {
+  background-color: #36b9cc !important;
+}
+
+.bg-warning {
+  background-color: #f6c23e !important;
+}
+
+.text-xs {
+  font-size: 0.7rem;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+}
+
+.stretched-link::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  content: "";
+}
+
+.card-footer {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Hover effects */
+.card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease-in-out;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease-in-out;
+}

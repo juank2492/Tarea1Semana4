@@ -1,0 +1,106 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-shopping-bag text-danger me-2"></i>Gestión de Pedidos</h2>
+    <div class="btn-group" role="group">
+      <button 
+        *ngFor="let estado of estadosDisponibles"
+        type="button" 
+        class="btn btn-outline-primary"
+        [class.active]="selectedEstado() === estado"
+        (click)="setFiltroEstado(estado)">
+        {{ getEstadoTexto(estado) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading() && pedidos().length === 0" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Sin pedidos -->
+  <div *ngIf="!loading() && pedidosFiltrados.length === 0" class="text-center py-5">
+    <i class="fas fa-shopping-bag display-1 text-muted mb-3"></i>
+    <h4>No hay pedidos {{ selectedEstado() !== 'Todos' ? 'con estado: ' + getEstadoTexto(selectedEstado()) : '' }}</h4>
+    <p class="text-muted">Los pedidos aparecerán aquí cuando los clientes hagan órdenes</p>
+  </div>
+
+  <!-- Lista de pedidos -->
+  <div class="row" *ngIf="pedidosFiltrados.length > 0">
+    <div class="col-12 mb-3">
+      <p class="text-muted">
+        Mostrando {{ pedidosFiltrados.length }} de {{ pedidos().length }} pedidos
+      </p>
+    </div>
+    
+    <div class="col-lg-6 col-xl-4 mb-4" *ngFor="let pedido of pedidosFiltrados">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Pedido #{{ pedido.pedidoId }}</strong>
+            <br>
+            <small class="text-muted">{{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+          <span [class]="getEstadoBadgeClass(pedido.estado)">
+            {{ getEstadoTexto(pedido.estado) }}
+          </span>
+        </div>
+        
+        <div class="card-body">
+          <div class="mb-3" *ngIf="pedido.usuario">
+            <h6 class="mb-1">
+              <i class="fas fa-user text-primary me-2"></i>{{ pedido.usuario.nombreUsuario }}
+            </h6>
+            <small class="text-muted">{{ pedido.usuario.email }}</small>
+          </div>
+          
+          <div class="mb-3" *ngIf="pedido.direccionEntrega">
+            <h6 class="mb-1">
+              <i class="fas fa-map-marker-alt text-info me-2"></i>Dirección de entrega
+            </h6>
+            <small>{{ pedido.direccionEntrega }}</small>
+          </div>
+          
+          <div class="mb-3" *ngIf="pedido.observaciones">
+            <h6 class="mb-1">
+              <i class="fas fa-comment text-warning me-2"></i>Observaciones
+            </h6>
+            <small>{{ pedido.observaciones }}</small>
+          </div>
+          
+          <div class="mb-3" *ngIf="pedido.detallesPedido && pedido.detallesPedido.length > 0">
+            <h6 class="mb-2">
+              <i class="fas fa-utensils text-success me-2"></i>Productos
+            </h6>
+            <div class="mb-2" *ngFor="let detalle of pedido.detallesPedido">
+              <div class="d-flex justify-content-between">
+                <span>{{ detalle.cantidad }}x {{ detalle.producto?.nombre || 'Producto' }}</span>
+                <span class="fw-bold">${{ detalle.subtotal | number:'1.2-2' }}</span>
+              </div>
+              <small class="text-muted" *ngIf="detalle.observacionesItem">{{ detalle.observacionesItem }}</small>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center">
+            <strong class="h5 text-success mb-0">Total: ${{ getTotalPedido(pedido) | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+        
+        <div class="card-footer bg-transparent" *ngIf="getNextStates(pedido.estado).length > 0">
+          <div class="d-flex gap-2 flex-wrap">
+            <button 
+              *ngFor="let estado of getNextStates(pedido.estado)"
+              class="btn btn-sm btn-outline-primary flex-fill"
+              (click)="cambiarEstadoPedido(pedido, estado)"
+              [disabled]="loading()">
+              <i class="fas fa-arrow-right me-1"></i>
+              {{ getEstadoTexto(estado) }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

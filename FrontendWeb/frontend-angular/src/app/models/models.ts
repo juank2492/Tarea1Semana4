@@ -11,6 +11,13 @@ export interface RegisterRequest {
   rol?: string;
 }
 
+export interface CreateUsuarioRequest {
+  nombreUsuario: string;
+  email: string;
+  password: string;
+  rol: string;
+}
+
 export interface LoginResponse {
   token: string;
   nombreUsuario: string;
@@ -44,9 +51,19 @@ export interface Producto {
   descripcion: string;
   precio: number;
   disponible: boolean;
-  imagenUrl: string;
+  imagenUrl?: string; // Opcional
   categoriaId: number;
   categoria?: Categoria;
+}
+
+// DTO para crear productos
+export interface CreateProductoDto {
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  disponible: boolean;
+  imagenUrl?: string; // Opcional
+  categoriaId: number;
 }
 
 export interface DetallePedido {
@@ -99,6 +116,20 @@ export interface CreateReservaRequest {
   horaReserva: string;
   numeroPersonas: number;
   observacionesEspeciales?: string;
+}
+
+export interface CreateCategoriaRequest {
+  nombre: string;
+  descripcion: string;
+  imagenUrl?: string;
+}
+
+export interface CreateProductoRequest {
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  categoriaId: number;
+  imagenUrl?: string;
 }
 
 export interface DisponibilidadHora {

@@ -22,7 +22,7 @@ namespace BackendAPI.Models
         public bool Disponible { get; set; } = true;
 
         [StringLength(255)]
-        public string ImagenUrl { get; set; } = string.Empty;
+        public string? ImagenUrl { get; set; } = string.Empty; // Opcional
 
         // Foreign Key
         public int CategoriaId { get; set; }

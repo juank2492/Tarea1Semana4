@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using BackendAPI.Models;
+using BCrypt.Net;
 
 namespace BackendAPI.Services
 {
@@ -73,17 +74,12 @@ namespace BackendAPI.Services
     {
         public static string HashPassword(string password)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password + "RestauranteSalt2024"));
-                return Convert.ToBase64String(hashedBytes);
-            }
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
         public static bool VerifyPassword(string password, string hash)
         {
-            var hashedInput = HashPassword(password);
-            return hashedInput == hash;
+            return BCrypt.Net.BCrypt.Verify(password, hash);
         }
     }
 }

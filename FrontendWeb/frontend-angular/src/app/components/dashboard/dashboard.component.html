@@ -1,0 +1,186 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center p-5">
+          <div class="mb-4">
+            <i class="fas fa-utensils display-1 text-primary"></i>
+          </div>
+          <h1 class="display-4 mb-3">Bienvenido, {{ currentUser()?.nombreUsuario }}!</h1>
+          <p class="lead text-muted mb-4">
+            <span class="badge bg-{{ currentUser()?.rol === 'Admin' ? 'danger' : currentUser()?.rol === 'Empleado' ? 'warning' : 'primary' }} fs-6 me-2">
+              {{ currentUser()?.rol }}
+            </span>
+            Selecciona una opción del menú según tu rol
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <!-- Opciones para Admin -->
+    <div class="col-12" *ngIf="isAdmin()">
+      <h3 class="text-center mb-4">
+        <i class="fas fa-crown text-warning me-2"></i>Panel de Administración
+      </h3>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/admin/dashboard')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-chart-bar display-4 text-info mb-3"></i>
+              <h5 class="card-title">Dashboard</h5>
+              <p class="card-text text-muted">Estadísticas y resumen general</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/admin/usuarios')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-users display-4 text-primary mb-3"></i>
+              <h5 class="card-title">Usuarios</h5>
+              <p class="card-text text-muted">Gestionar usuarios del sistema</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/admin/productos')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-pizza-slice display-4 text-warning mb-3"></i>
+              <h5 class="card-title">Productos</h5>
+              <p class="card-text text-muted">Gestionar menú y productos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/admin/categorias')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-tags display-4 text-success mb-3"></i>
+              <h5 class="card-title">Categorías</h5>
+              <p class="card-text text-muted">Gestionar categorías de productos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/admin/pedidos')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-shopping-bag display-4 text-danger mb-3"></i>
+              <h5 class="card-title">Pedidos</h5>
+              <p class="card-text text-muted">Gestionar todos los pedidos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/admin/reservas')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-calendar-alt display-4 text-info mb-3"></i>
+              <h5 class="card-title">Reservas</h5>
+              <p class="card-text text-muted">Gestionar reservas del restaurante</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Opciones para Empleado -->
+    <div class="col-12" *ngIf="isEmployee()">
+      <h3 class="text-center mb-4">
+        <i class="fas fa-user-tie text-warning me-2"></i>Panel de Empleado
+      </h3>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/empleado/productos')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-pizza-slice display-4 text-warning mb-3"></i>
+              <h5 class="card-title">Productos</h5>
+              <p class="card-text text-muted">Gestionar menú y productos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/empleado/categorias')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-tags display-4 text-success mb-3"></i>
+              <h5 class="card-title">Categorías</h5>
+              <p class="card-text text-muted">Gestionar categorías de productos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/empleado/pedidos')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-shopping-bag display-4 text-danger mb-3"></i>
+              <h5 class="card-title">Pedidos</h5>
+              <p class="card-text text-muted">Gestionar pedidos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/empleado/reservas')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-calendar-alt display-4 text-info mb-3"></i>
+              <h5 class="card-title">Reservas</h5>
+              <p class="card-text text-muted">Gestionar reservas</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Opciones para Cliente -->
+    <div class="col-12" *ngIf="isClient()">
+      <h3 class="text-center mb-4">
+        <i class="fas fa-user text-primary me-2"></i>Panel de Cliente
+      </h3>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/menu')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-utensils display-4 text-primary mb-3"></i>
+              <h5 class="card-title">Ver Menú</h5>
+              <p class="card-text text-muted">Explora nuestros productos disponibles</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/cart')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-shopping-cart display-4 text-warning mb-3"></i>
+              <h5 class="card-title">Mi Carrito</h5>
+              <p class="card-text text-muted">Revisar productos seleccionados</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/pedidos')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-shopping-bag display-4 text-success mb-3"></i>
+              <h5 class="card-title">Mis Pedidos</h5>
+              <p class="card-text text-muted">Historial de pedidos realizados</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 border-0 shadow-sm hover-card" (click)="navigateTo('/reservas')">
+            <div class="card-body text-center p-4">
+              <i class="fas fa-calendar-check display-4 text-info mb-3"></i>
+              <h5 class="card-title">Mis Reservas</h5>
+              <p class="card-text text-muted">Reservas en el restaurante</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

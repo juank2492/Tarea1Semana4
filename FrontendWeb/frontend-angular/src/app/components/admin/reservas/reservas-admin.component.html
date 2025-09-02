@@ -1,0 +1,99 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-alt text-info me-2"></i>Gestión de Reservas</h2>
+    <div class="btn-group" role="group">
+      <button 
+        *ngFor="let estado of estadosDisponibles"
+        type="button" 
+        class="btn btn-outline-primary"
+        [class.active]="selectedEstado() === estado"
+        (click)="setFiltroEstado(estado)">
+        {{ estado }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading() && reservas().length === 0" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Sin reservas -->
+  <div *ngIf="!loading() && reservasFiltradas.length === 0" class="text-center py-5">
+    <i class="fas fa-calendar-times display-1 text-muted mb-3"></i>
+    <h4>No hay reservas {{ selectedEstado() !== 'Todos' ? 'con estado: ' + selectedEstado() : '' }}</h4>
+    <p class="text-muted">Las reservas aparecerán aquí cuando los clientes las soliciten</p>
+  </div>
+
+  <!-- Lista de reservas -->
+  <div class="row" *ngIf="reservasFiltradas.length > 0">
+    <div class="col-12 mb-3">
+      <p class="text-muted">
+        Mostrando {{ reservasFiltradas.length }} de {{ reservas().length }} reservas
+      </p>
+    </div>
+    
+    <div class="col-lg-6 col-xl-4 mb-4" *ngFor="let reserva of reservasFiltradas">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Reserva #{{ reserva.reservaId }}</strong>
+            <br>
+            <small class="text-muted" *ngIf="reserva.fechaCreacion">
+              Creada: {{ reserva.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+            </small>
+          </div>
+          <span [class]="getEstadoBadgeClass(reserva.estado)">
+            {{ reserva.estado }}
+          </span>
+        </div>
+        
+        <div class="card-body">
+          <div class="mb-3" *ngIf="reserva.usuario">
+            <h6 class="mb-1">
+              <i class="fas fa-user text-primary me-2"></i>{{ reserva.usuario.nombreUsuario }}
+            </h6>
+            <small class="text-muted">{{ reserva.usuario.email }}</small>
+          </div>
+          
+          <div class="mb-3">
+            <h6 class="mb-1">
+              <i class="fas fa-calendar text-info me-2"></i>Fecha y Hora
+            </h6>
+            <div>{{ reserva.fechaReserva | date:'dd/MM/yyyy' }}</div>
+            <div>{{ reserva.fechaReserva | date:'HH:mm' }}</div>
+          </div>
+          
+          <div class="mb-3">
+            <h6 class="mb-1">
+              <i class="fas fa-users text-success me-2"></i>Personas
+            </h6>
+            <span>{{ reserva.numeroPersonas }} {{ reserva.numeroPersonas === 1 ? 'persona' : 'personas' }}</span>
+          </div>
+          
+          <div class="mb-3" *ngIf="reserva.observacionesEspeciales">
+            <h6 class="mb-1">
+              <i class="fas fa-comment text-warning me-2"></i>Observaciones
+            </h6>
+            <small>{{ reserva.observacionesEspeciales }}</small>
+          </div>
+        </div>
+        
+        <div class="card-footer bg-transparent" *ngIf="getNextStates(reserva.estado).length > 0">
+          <div class="d-flex gap-2 flex-wrap">
+            <button 
+              *ngFor="let estado of getNextStates(reserva.estado)"
+              class="btn btn-sm btn-outline-primary flex-fill"
+              (click)="cambiarEstadoReserva(reserva, estado)"
+              [disabled]="loading()">
+              <i class="fas fa-arrow-right me-1"></i>
+              {{ estado }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

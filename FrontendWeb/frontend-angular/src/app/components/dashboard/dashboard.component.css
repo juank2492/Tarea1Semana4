@@ -1,0 +1,25 @@
+.hover-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.display-1 {
+  font-size: 4rem;
+}
+
+.display-4 {
+  font-size: 3rem;
+}
+
+.card {
+  border-radius: 0.75rem;
+}
+
+.badge {
+  font-size: 0.875em;
+}

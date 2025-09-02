@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { LoginRequest, LoginResponse, RegisterRequest, Usuario } from '../models/models';
@@ -14,6 +14,9 @@ export class AuthService {
   private apiUrl = environment.apiUrl; // Usando configuración centralizada
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
+  
+  // Signal para usar en templates
+  public currentUser = signal<Usuario | null>(null);
 
   constructor(
     private http: HttpClient,
@@ -51,6 +54,7 @@ export class AuthService {
       localStorage.removeItem('user');
     }
     this.currentUserSubject.next(null);
+    this.currentUser.set(null);
   }
 
   getToken(): string | null {
@@ -112,6 +116,7 @@ export class AuthService {
       localStorage.setItem('user', JSON.stringify(user));
     }
     this.currentUserSubject.next(user);
+    this.currentUser.set(user);
   }
 
   private loadCurrentUser(): void {
@@ -120,6 +125,7 @@ export class AuthService {
       if (userStr && this.isAuthenticated()) {
         const user = JSON.parse(userStr);
         this.currentUserSubject.next(user);
+        this.currentUser.set(user);
       }
     }
   }

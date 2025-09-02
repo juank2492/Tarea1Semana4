@@ -28,8 +28,7 @@ export class RegisterComponent {
       nombreUsuario: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      rol: ['Cliente', [Validators.required]]
+      confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -48,8 +47,10 @@ export class RegisterComponent {
       this.loading.set(true);
       
       const { confirmPassword, ...registerData } = this.registerForm.value;
+      // Forzar rol como Cliente para todos los registros públicos
+      const dataWithRole = { ...registerData, rol: 'Cliente' };
       
-      this.authService.register(registerData).subscribe({
+      this.authService.register(dataWithRole).subscribe({
         next: (response) => {
           this.toastr.success(`¡Bienvenido ${response.nombreUsuario}!`, 'Registro exitoso');
           this.router.navigate(['/']);
@@ -88,5 +89,4 @@ export class RegisterComponent {
   get email() { return this.registerForm.get('email'); }
   get password() { return this.registerForm.get('password'); }
   get confirmPassword() { return this.registerForm.get('confirmPassword'); }
-  get rol() { return this.registerForm.get('rol'); }
 }

@@ -1,0 +1,202 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-pizza-slice text-warning me-2"></i>Gestión de Productos</h2>
+    <button class="btn btn-primary" (click)="showCreateForm()">
+      <i class="fas fa-plus me-2"></i>Nuevo Producto
+    </button>
+  </div>
+
+  <!-- Formulario para crear/editar producto -->
+  <div class="card mb-4" *ngIf="showForm()">
+    <div class="card-header">
+      <h5>
+        <i class="fas fa-{{ editingProduct() ? 'edit' : 'plus' }} me-2"></i>
+        {{ editingProduct() ? 'Editar Producto' : 'Nuevo Producto' }}
+      </h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="productoForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="nombre" class="form-label">Nombre del Producto *</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombre"
+              formControlName="nombre"
+              [class.is-invalid]="nombre?.touched && nombre?.errors">
+            <div class="invalid-feedback" *ngIf="nombre?.touched && nombre?.errors?.['required']">
+              El nombre del producto es requerido
+            </div>
+            <div class="invalid-feedback" *ngIf="nombre?.touched && nombre?.errors?.['minlength']">
+              El nombre debe tener al menos 3 caracteres
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="categoriaId" class="form-label">Categoría *</label>
+            <select 
+              class="form-select" 
+              id="categoriaId"
+              formControlName="categoriaId"
+              [class.is-invalid]="categoriaId?.touched && categoriaId?.errors">
+              <option value="">Seleccionar categoría</option>
+              <option *ngFor="let categoria of categorias()" [value]="categoria.categoriaId">
+                {{ categoria.nombre }}
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="categoriaId?.touched && categoriaId?.errors?.['required']">
+              La categoría es requerida
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="precio" class="form-label">Precio *</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input 
+                type="number" 
+                step="0.01"
+                class="form-control" 
+                id="precio"
+                formControlName="precio"
+                [class.is-invalid]="precio?.touched && precio?.errors">
+            </div>
+            <div class="invalid-feedback" *ngIf="precio?.touched && precio?.errors?.['required']">
+              El precio es requerido
+            </div>
+            <div class="invalid-feedback" *ngIf="precio?.touched && precio?.errors?.['min']">
+              El precio debe ser mayor a 0
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="imagenUrl" class="form-label">URL de Imagen</label>
+            <input 
+              type="url" 
+              class="form-control" 
+              id="imagenUrl"
+              formControlName="imagenUrl"
+              placeholder="https://ejemplo.com/imagen.jpg">
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-8 mb-3">
+            <label for="descripcion" class="form-label">Descripción *</label>
+            <textarea 
+              class="form-control" 
+              id="descripcion"
+              formControlName="descripcion"
+              rows="3"
+              [class.is-invalid]="descripcion?.touched && descripcion?.errors"
+              placeholder="Descripción detallada del producto"></textarea>
+            <div class="invalid-feedback" *ngIf="descripcion?.touched && descripcion?.errors?.['required']">
+              La descripción es requerida
+            </div>
+          </div>
+          
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Estado</label>
+            <div class="form-check form-switch">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="disponible"
+                formControlName="disponible">
+              <label class="form-check-label" for="disponible">
+                Producto disponible
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="loading()">
+            <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2"></span>
+            <i class="fas fa-save me-2" *ngIf="!loading()"></i>
+            {{ editingProduct() ? 'Actualizar' : 'Crear' }} Producto
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="hideForm()">
+            <i class="fas fa-times me-2"></i>Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de productos -->
+  <div *ngIf="loading() && productos().length === 0" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && productos().length === 0" class="text-center py-5">
+    <i class="fas fa-pizza-slice display-1 text-muted mb-3"></i>
+    <h4>No hay productos registrados</h4>
+    <p class="text-muted">Crea el primer producto del menú</p>
+  </div>
+
+  <!-- Grid de productos -->
+  <div class="row" *ngIf="productos().length > 0">
+    <div class="col-md-6 col-lg-4 col-xl-3 mb-4" *ngFor="let producto of productos()">
+      <div class="card h-100 shadow-sm">
+        <div class="position-relative">
+          <img 
+            [src]="producto.imagenUrl || 'https://via.placeholder.com/300x200?text=Sin+Imagen'" 
+            class="card-img-top"
+            [alt]="producto.nombre"
+            style="height: 200px; object-fit: cover;">
+          
+          <div class="position-absolute top-0 end-0 m-2">
+            <span class="badge {{ producto.disponible ? 'bg-success' : 'bg-danger' }}">
+              {{ producto.disponible ? 'Disponible' : 'No Disponible' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="card-body d-flex flex-column">
+          <h6 class="card-title fw-bold">{{ producto.nombre }}</h6>
+          <p class="card-text text-muted small flex-grow-1">{{ producto.descripcion }}</p>
+          
+          <div class="mb-2">
+            <span class="badge bg-info">{{ getCategoriaNombre(producto.categoriaId) }}</span>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="h5 text-success mb-0">${{ producto.precio | number:'1.2-2' }}</span>
+            <small class="text-muted">ID: {{ producto.productoId }}</small>
+          </div>
+        </div>
+        
+        <div class="card-footer bg-transparent border-0 pt-0">
+          <div class="d-flex gap-2">
+            <button 
+              class="btn btn-sm btn-outline-primary flex-fill"
+              (click)="editProducto(producto)"
+              [disabled]="loading()">
+              <i class="fas fa-edit me-1"></i>Editar
+            </button>
+            <button 
+              class="btn btn-sm btn-outline-{{ producto.disponible ? 'warning' : 'success' }}"
+              (click)="toggleDisponibilidad(producto)"
+              [disabled]="loading()">
+              <i class="fas fa-{{ producto.disponible ? 'eye-slash' : 'eye' }} me-1"></i>
+              {{ producto.disponible ? 'Ocultar' : 'Mostrar' }}
+            </button>
+            <button 
+              class="btn btn-sm btn-outline-danger"
+              (click)="deleteProducto(producto)"
+              [disabled]="loading()"
+              title="Eliminar producto">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CategoriaService } from '../../services/categoria.service';
 import { ProductoService } from '../../services/producto.service';
+import { AuthService } from '../../services/auth.service';
 import { Categoria, Producto } from '../../models/models';
 
 @Component({
@@ -19,7 +20,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private categoriaService: CategoriaService,
-    private productoService: ProductoService
+    private productoService: ProductoService,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

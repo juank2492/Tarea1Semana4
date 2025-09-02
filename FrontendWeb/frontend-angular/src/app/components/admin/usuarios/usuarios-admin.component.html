@@ -1,0 +1,172 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-users text-primary me-2"></i>Gestión de Usuarios</h2>
+    <button class="btn btn-primary" (click)="showCreateForm()">
+      <i class="fas fa-plus me-2"></i>Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- Formulario para crear/editar usuario -->
+  <div class="card mb-4" *ngIf="showForm()">
+    <div class="card-header">
+      <h5>
+        <i class="fas fa-{{ editingUser() ? 'edit' : 'plus' }} me-2"></i>
+        {{ editingUser() ? 'Editar Usuario' : 'Nuevo Usuario' }}
+      </h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="nombreUsuario" class="form-label">Nombre de Usuario *</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombreUsuario"
+              formControlName="nombreUsuario"
+              [class.is-invalid]="nombreUsuario?.touched && nombreUsuario?.errors">
+            <div class="invalid-feedback" *ngIf="nombreUsuario?.touched && nombreUsuario?.errors?.['required']">
+              El nombre de usuario es requerido
+            </div>
+            <div class="invalid-feedback" *ngIf="nombreUsuario?.touched && nombreUsuario?.errors?.['minlength']">
+              El nombre debe tener al menos 3 caracteres
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="email" class="form-label">Email *</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email"
+              formControlName="email"
+              [class.is-invalid]="email?.touched && email?.errors">
+            <div class="invalid-feedback" *ngIf="email?.touched && email?.errors?.['required']">
+              El email es requerido
+            </div>
+            <div class="invalid-feedback" *ngIf="email?.touched && email?.errors?.['email']">
+              Ingresa un email válido
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="password" class="form-label">
+              Contraseña {{ editingUser() ? '(dejar vacío para mantener la actual)' : '*' }}
+            </label>
+            <input 
+              type="password" 
+              class="form-control" 
+              id="password"
+              formControlName="password"
+              [class.is-invalid]="password?.touched && password?.errors">
+            <div class="invalid-feedback" *ngIf="password?.touched && password?.errors?.['required']">
+              La contraseña es requerida
+            </div>
+            <div class="invalid-feedback" *ngIf="password?.touched && password?.errors?.['minlength']">
+              La contraseña debe tener al menos 6 caracteres
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="rol" class="form-label">Rol *</label>
+            <select 
+              class="form-select" 
+              id="rol"
+              formControlName="rol"
+              [class.is-invalid]="rol?.touched && rol?.errors">
+              <option value="Cliente">Cliente</option>
+              <option value="Empleado">Empleado</option>
+              <option value="Admin">Administrador</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="rol?.touched && rol?.errors?.['required']">
+              El rol es requerido
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="loading()">
+            <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2"></span>
+            <i class="fas fa-save me-2" *ngIf="!loading()"></i>
+            {{ editingUser() ? 'Actualizar' : 'Crear' }} Usuario
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="hideForm()">
+            <i class="fas fa-times me-2"></i>Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de usuarios -->
+  <div *ngIf="loading() && usuarios().length === 0" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && usuarios().length === 0" class="text-center py-5">
+    <i class="fas fa-users display-1 text-muted mb-3"></i>
+    <h4>No hay usuarios registrados</h4>
+    <p class="text-muted">Crea el primer usuario del sistema</p>
+  </div>
+
+  <div class="card" *ngIf="usuarios().length > 0">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="fas fa-list me-2"></i>Lista de Usuarios ({{ usuarios().length }})
+      </h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Fecha Registro</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let usuario of usuarios()">
+              <td>{{ usuario.usuarioId }}</td>
+              <td>
+                <strong>{{ usuario.nombreUsuario }}</strong>
+              </td>
+              <td>{{ usuario.email }}</td>
+              <td>
+                <span [class]="getRoleBadgeClass(usuario.rol)">
+                  {{ usuario.rol }}
+                </span>
+              </td>
+              <td>{{ usuario.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="text-center">
+                <div class="btn-group" role="group">
+                  <button 
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="editUsuario(usuario)"
+                    [disabled]="loading()"
+                    title="Editar usuario">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button 
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="deleteUsuario(usuario)"
+                    [disabled]="loading()"
+                    title="Eliminar usuario">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

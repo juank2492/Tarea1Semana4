@@ -4,11 +4,18 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BackendAPI.Data;
 using BackendAPI.Services;
+using BCrypt.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Configurar para manejar referencias circulares
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
 // Configurar Entity Framework
 builder.Services.AddDbContext<RestauranteContext>(options =>
@@ -43,7 +50,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "https://localhost:4200", 
+                          "http://localhost:4201", "https://localhost:4201")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -87,6 +95,9 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Crear usuario administrador por defecto
+await SeedAdminUser(app);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -105,3 +116,34 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Método para crear usuario administrador por defecto
+static async Task SeedAdminUser(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<RestauranteContext>();
+    
+    // Asegurar que la base de datos existe
+    await context.Database.EnsureCreatedAsync();
+    
+    // Verificar si ya existe un administrador
+    if (!context.Usuarios.Any(u => u.Rol == "Admin"))
+    {
+        var adminUser = new BackendAPI.Models.Usuario
+        {
+            NombreUsuario = "admin",
+            Email = "admin@restaurante.com",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
+            Rol = "Admin",
+            FechaRegistro = DateTime.UtcNow
+        };
+        
+        context.Usuarios.Add(adminUser);
+        await context.SaveChangesAsync();
+        
+        Console.WriteLine("✅ Usuario administrador creado:");
+        Console.WriteLine("   Usuario: admin");
+        Console.WriteLine("   Contraseña: Admin123!");
+        Console.WriteLine("   Email: admin@restaurante.com");
+    }
+}

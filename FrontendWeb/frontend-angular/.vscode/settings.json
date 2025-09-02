@@ -1,0 +1,24 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.format.enable": true,
+  "json.schemas": [
+    {
+      "fileMatch": ["tsconfig*.json"],
+      "schema": {
+        "allowComments": true,
+        "additionalProperties": true,
+        "properties": {
+          "compilerOptions": {
+            "properties": {
+              "module": {
+                "enum": ["CommonJS", "AMD", "System", "UMD", "ES6", "ES2015", "ES2020", "ES2022", "ESNext", "None", "Node16", "NodeNext", "preserve"],
+                "description": "Specify what module code is generated."
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

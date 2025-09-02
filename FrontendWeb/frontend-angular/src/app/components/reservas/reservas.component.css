@@ -1,0 +1,24 @@
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.display-1 {
+  font-size: 4rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+}
+
+.btn-sm {
+  font-size: 0.875rem;
+}
+
+.card-footer {
+  border-top: none !important;
+}

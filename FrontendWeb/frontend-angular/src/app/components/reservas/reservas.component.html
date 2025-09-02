@@ -1,0 +1,143 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-alt text-primary me-2"></i>Mis Reservas</h2>
+    <button class="btn btn-primary" (click)="toggleForm()">
+      <i class="fas fa-plus me-2"></i>Nueva Reserva
+    </button>
+  </div>
+
+  <!-- Formulario para crear nueva reserva -->
+  <div class="card mb-4" *ngIf="showForm()">
+    <div class="card-header">
+      <h5><i class="fas fa-calendar-plus me-2"></i>Nueva Reserva</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="fechaReserva" class="form-label">Fecha de Reserva *</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              id="fechaReserva"
+              formControlName="fechaReserva"
+              [class.is-invalid]="fechaReserva?.touched && fechaReserva?.errors">
+            <div class="invalid-feedback" *ngIf="fechaReserva?.touched && fechaReserva?.errors?.['required']">
+              La fecha de reserva es requerida
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="horaReserva" class="form-label">Hora de Reserva *</label>
+            <input 
+              type="time" 
+              class="form-control" 
+              id="horaReserva"
+              formControlName="horaReserva"
+              [class.is-invalid]="horaReserva?.touched && horaReserva?.errors">
+            <div class="invalid-feedback" *ngIf="horaReserva?.touched && horaReserva?.errors?.['required']">
+              La hora de reserva es requerida
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="numeroPersonas" class="form-label">Número de Personas *</label>
+            <select 
+              class="form-select" 
+              id="numeroPersonas"
+              formControlName="numeroPersonas"
+              [class.is-invalid]="numeroPersonas?.touched && numeroPersonas?.errors">
+              <option value="1">1 persona</option>
+              <option value="2">2 personas</option>
+              <option value="3">3 personas</option>
+              <option value="4">4 personas</option>
+              <option value="5">5 personas</option>
+              <option value="6">6 personas</option>
+              <option value="7">7 personas</option>
+              <option value="8">8 personas</option>
+              <option value="9">9 personas</option>
+              <option value="10">10 personas</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="numeroPersonas?.touched && numeroPersonas?.errors">
+              Selecciona un número válido de personas
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="comentarios" class="form-label">Comentarios adicionales</label>
+            <textarea 
+              class="form-control" 
+              id="comentarios"
+              formControlName="comentarios"
+              rows="3"
+              placeholder="Alguna solicitud especial o comentario..."></textarea>
+          </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="loading()">
+            <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2"></span>
+            <i class="fas fa-save me-2" *ngIf="!loading()"></i>Guardar Reserva
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="toggleForm()">
+            <i class="fas fa-times me-2"></i>Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de reservas -->
+  <div *ngIf="loading() && reservas().length === 0" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && reservas().length === 0" class="text-center py-5">
+    <i class="fas fa-calendar-times display-1 text-muted mb-3"></i>
+    <h4>No tienes reservas</h4>
+    <p class="text-muted">¡Haz tu primera reserva para disfrutar en nuestro restaurante!</p>
+  </div>
+
+  <div class="row" *ngIf="reservas().length > 0">
+    <div class="col-md-6 col-lg-4 mb-4" *ngFor="let reserva of reservas()">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <small class="text-muted">Reserva #{{ reserva.reservaId }}</small>
+          <span [class]="getEstadoBadgeClass(reserva.estado)">{{ reserva.estado }}</span>
+        </div>
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="fas fa-calendar text-primary me-2"></i>
+            {{ reserva.fechaReserva | date:'dd/MM/yyyy' }}
+          </h6>
+          <p class="card-text mb-2">
+            <i class="fas fa-clock text-info me-2"></i>
+            {{ reserva.fechaReserva | date:'HH:mm' }}
+          </p>
+          <p class="card-text mb-2">
+            <i class="fas fa-users text-success me-2"></i>
+            {{ reserva.numeroPersonas }} {{ reserva.numeroPersonas === 1 ? 'persona' : 'personas' }}
+          </p>
+          <div *ngIf="reserva.observacionesEspeciales" class="mb-3">
+            <small class="text-muted">
+              <i class="fas fa-comment-dots me-1"></i>
+              {{ reserva.observacionesEspeciales }}
+            </small>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent" *ngIf="reserva.estado === 'Pendiente' || reserva.estado === 'Confirmada'">
+          <button 
+            class="btn btn-outline-danger btn-sm w-100"
+            (click)="cancelarReserva(reserva.reservaId!)"
+            [disabled]="loading() || !reserva.reservaId">
+            <i class="fas fa-times me-2"></i>Cancelar Reserva
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
