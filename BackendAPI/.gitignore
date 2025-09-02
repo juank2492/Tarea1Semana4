@@ -1,0 +1,37 @@
+# Build
+bin/
+obj/
+artifacts/
+TestResults/
+*.nupkg
+*.snupkg
+*.psess
+*.vsp
+*.vspx
+*.coverage
+*.coveragexml
+
+# Visual Studio / Rider
+.vs/
+*.user
+*.suo
+*.opendb
+*.dbmdl
+*.jfm
+.idea/
+_ReSharper.Caches/
+*.sln.iml
+
+# Logs
+*.log
+
+# Publicación
+*.Publish.xml
+**/Properties/PublishProfiles/*
+
+# Config sensibles (mantén appsettings.json, ignora variantes locales si guardas secretos ahí)
+appsettings.*.local.json
+
+# SO
+.DS_Store
+Thumbs.db

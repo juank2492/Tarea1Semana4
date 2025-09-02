@@ -1,0 +1,154 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12 text-center">
+      <h1 class="display-4 mb-3">
+        <i class="fas fa-utensils me-2"></i>
+        Nuestro Menú
+      </h1>
+      <p class="lead">Descubre nuestros deliciosos platillos preparados con los mejores ingredientes</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <!-- Filtro por categoría -->
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <button 
+          class="btn"
+          [class.btn-primary]="categoriaSeleccionada() === null"
+          [class.btn-outline-primary]="categoriaSeleccionada() !== null"
+          (click)="filtrarPorCategoria(null)"
+        >
+          <i class="fas fa-th-large me-1"></i>
+          Todas
+        </button>
+        @for (categoria of categorias(); track categoria.categoriaId) {
+          <button 
+            class="btn"
+            [class.btn-primary]="categoriaSeleccionada() === categoria.categoriaId"
+            [class.btn-outline-primary]="categoriaSeleccionada() !== categoria.categoriaId"
+            (click)="filtrarPorCategoria(categoria.categoriaId)"
+          >
+            {{ categoria.nombre }}
+          </button>
+        }
+      </div>
+    </div>
+    <div class="col-md-4">
+      <!-- Buscador -->
+      <div class="input-group">
+        <span class="input-group-text">
+          <i class="fas fa-search"></i>
+        </span>
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Buscar productos..."
+          [value]="busqueda()"
+          (input)="onBusquedaChange($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-spinner">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando productos...</span>
+      </div>
+    </div>
+  } @else {
+    <!-- Productos -->
+    @if (productosFiltrados().length > 0) {
+      <div class="row g-4">
+        @for (producto of productosFiltrados(); track producto.productoId) {
+          <div class="col-lg-4 col-md-6">
+            <div class="card h-100 food-card">
+              @if (producto.imagenUrl) {
+                <img [src]="producto.imagenUrl" [alt]="producto.nombre" [title]="producto.nombre" class="card-img-top">
+              } @else {
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center placeholder-image">
+                  <i class="fas fa-hamburger fa-3x text-muted"></i>
+                </div>
+              }
+              
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="card-title mb-0">{{ producto.nombre }}</h5>
+                  @if (producto.disponible) {
+                    <span class="badge bg-success">Disponible</span>
+                  } @else {
+                    <span class="badge bg-danger">Agotado</span>
+                  }
+                </div>
+                
+                <p class="card-text flex-grow-1 text-muted">
+                  {{ producto.descripcion }}
+                </p>
+                
+                @if (producto.categoria) {
+                  <small class="text-muted mb-2">
+                    <i class="fas fa-tag me-1"></i>
+                    {{ producto.categoria.nombre }}
+                  </small>
+                }
+                
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                  <span class="price-text fs-4 fw-bold">
+                    ${{ producto.precio | number:'1.2-2' }}
+                  </span>
+                  
+                  @if (isAuthenticated()) {
+                    <button 
+                      class="btn btn-primary"
+                      [disabled]="!producto.disponible"
+                      (click)="agregarAlCarrito(producto)"
+                    >
+                      @if (producto.disponible) {
+                        <i class="fas fa-cart-plus me-1"></i>
+                        Agregar
+                      } @else {
+                        <i class="fas fa-times me-1"></i>
+                        Agotado
+                      }
+                    </button>
+                  } @else {
+                    <small class="text-muted">
+                      <a href="/login" class="text-decoration-none">
+                        Inicia sesión para comprar
+                      </a>
+                    </small>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- No hay productos -->
+      <div class="text-center py-5">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h3 class="text-muted">No se encontraron productos</h3>
+        <p class="text-muted">
+          @if (busqueda()) {
+            No hay productos que coincidan con "{{ busqueda() }}"
+          } @else if (categoriaSeleccionada()) {
+            No hay productos en esta categoría
+          } @else {
+            No hay productos disponibles en este momento
+          }
+        </p>
+        @if (busqueda() || categoriaSeleccionada()) {
+          <button class="btn btn-primary" (click)="filtrarPorCategoria(null); busqueda.set('')">
+            <i class="fas fa-undo me-1"></i>
+            Limpiar filtros
+          </button>
+        }
+      </div>
+    }
+  }
+</div>

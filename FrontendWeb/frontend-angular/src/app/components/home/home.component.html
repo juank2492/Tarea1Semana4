@@ -1,0 +1,136 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-3">Bienvenido a Restaurante Delicioso</h1>
+    <p class="lead mb-4">Disfruta de la mejor comida preparada con ingredientes frescos y amor por la gastronomía</p>
+    <div class="d-flex gap-3 justify-content-center">
+      <a routerLink="/menu" class="btn btn-primary btn-lg">
+        <i class="fas fa-utensils me-2"></i>Ver Menú
+      </a>
+      <a routerLink="/reservas" class="btn btn-outline-light btn-lg">
+        <i class="fas fa-calendar-alt me-2"></i>Hacer Reserva
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Categorías -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="section-title">Nuestras Categorías</h2>
+    @if (loading()) {
+      <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    } @else {
+      <div class="row g-4">
+        @for (categoria of categorias(); track categoria.categoriaId) {
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 food-card">
+              @if (categoria.imagenUrl) {
+                <img [src]="categoria.imagenUrl" 
+                     [alt]="categoria.nombre" 
+                     [title]="categoria.nombre"
+                     class="card-img-top">
+              } @else {
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                  <i class="fas fa-utensils fa-3x text-muted"></i>
+                </div>
+              }
+              <div class="card-body text-center">
+                <h5 class="card-title">{{ categoria.nombre }}</h5>
+                <p class="card-text">{{ categoria.descripcion }}</p>
+                <a routerLink="/menu" [queryParams]="{categoria: categoria.categoriaId}" 
+                   class="btn btn-primary">
+                  Ver Productos
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Productos Destacados -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="section-title">Productos Destacados</h2>
+    @if (loading()) {
+      <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    } @else {
+      <div class="row g-4">
+        @for (producto of productosDestacados(); track producto.productoId) {
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 food-card">
+              @if (producto.imagenUrl) {
+                <img [src]="producto.imagenUrl" 
+                     [alt]="producto.nombre" 
+                     [title]="producto.nombre"
+                     class="card-img-top">
+              } @else {
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                  <i class="fas fa-hamburger fa-3x text-muted"></i>
+                </div>
+              }
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text flex-grow-1">{{ producto.descripcion }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                  <span class="price-text">${{ producto.precio | number:'1.2-2' }}</span>
+                  @if (producto.disponible) {
+                    <span class="badge bg-success">Disponible</span>
+                  } @else {
+                    <span class="badge bg-danger">No Disponible</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="text-center mt-4">
+        <a routerLink="/menu" class="btn btn-primary btn-lg">
+          <i class="fas fa-utensils me-2"></i>Ver Todo el Menú
+        </a>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Características -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="section-title">¿Por Qué Elegirnos?</h2>
+    <div class="row g-4">
+      <div class="col-md-4 text-center">
+        <div class="mb-3">
+          <i class="fas fa-leaf fa-3x text-success"></i>
+        </div>
+        <h4>Ingredientes Frescos</h4>
+        <p>Utilizamos solo los ingredientes más frescos y de mejor calidad para preparar nuestros platillos.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="mb-3">
+          <i class="fas fa-clock fa-3x text-primary"></i>
+        </div>
+        <h4>Entrega Rápida</h4>
+        <p>Preparamos tu comida al momento y la entregamos en el menor tiempo posible.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="mb-3">
+          <i class="fas fa-heart fa-3x text-danger"></i>
+        </div>
+        <h4>Hecho con Amor</h4>
+        <p>Cada platillo es preparado con pasión y dedicación por nuestros chefs expertos.</p>
+      </div>
+    </div>
+  </div>
+</section>

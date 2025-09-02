@@ -1,0 +1,121 @@
+/* Importar Bootstrap */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'ngx-toastr/toastr';
+
+/* Estilos globales para el restaurante */
+:root {
+  --primary-color: #d4691c;
+  --secondary-color: #8b4513;
+  --accent-color: #ffa500;
+  --text-color: #333;
+  --background-color: #f8f9fa;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: var(--primary-color) !important;
+}
+
+.card {
+  box-shadow: var(--card-shadow);
+  border: none;
+  border-radius: 10px;
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.food-card {
+  transition: transform 0.3s ease;
+}
+
+.food-card:hover {
+  transform: translateY(-5px);
+}
+
+.price-text {
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.section-title {
+  color: var(--primary-color);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.auth-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: var(--card-shadow);
+}
+
+.status-badge {
+  font-size: 0.8em;
+  padding: 0.25em 0.5em;
+}
+
+.status-pendiente {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.status-confirmada,
+.status-listo {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.status-cancelada {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.status-en-preparacion {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.status-entregado,
+.status-completada {
+  background-color: #6c757d;
+  color: #fff;
+}

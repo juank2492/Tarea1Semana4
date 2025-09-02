@@ -1,0 +1,215 @@
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1>
+          <i class="fas fa-shopping-cart me-2"></i>
+          Mi Carrito
+        </h1>
+        <button class="btn btn-outline-primary" (click)="continueShopping()">
+          <i class="fas fa-arrow-left me-1"></i>
+          Continuar Comprando
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Content -->
+  @if (cartItems().length > 0) {
+    <div class="row">
+      <!-- Items List -->
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              Productos en tu carrito ({{ itemCount() }} 
+              {{ itemCount() === 1 ? 'artículo' : 'artículos' }})
+            </h5>
+            <button class="btn btn-outline-danger btn-sm" (click)="clearCart()">
+              <i class="fas fa-trash me-1"></i>
+              Vaciar Carrito
+            </button>
+          </div>
+          <div class="card-body">
+            @for (item of cartItems(); track item.producto.productoId) {
+              <div class="row align-items-center py-3 border-bottom">
+                <!-- Product Image -->
+                <div class="col-md-2">
+                  @if (item.producto.imagenUrl) {
+                    <img [src]="item.producto.imagenUrl" 
+                         [alt]="item.producto.nombre"
+                         [title]="item.producto.nombre"
+                         class="img-fluid rounded cart-item-image">
+                  } @else {
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center cart-item-image">
+                      <i class="fas fa-hamburger text-muted"></i>
+                    </div>
+                  }
+                </div>
+
+                <!-- Product Details -->
+                <div class="col-md-4">
+                  <h6 class="mb-1">{{ item.producto.nombre }}</h6>
+                  <p class="text-muted small mb-1">{{ item.producto.descripcion }}</p>
+                  @if (item.observaciones) {
+                    <small class="text-info">
+                      <i class="fas fa-comment me-1"></i>
+                      {{ item.observaciones }}
+                    </small>
+                  }
+                </div>
+
+                <!-- Price -->
+                <div class="col-md-2 text-center">
+                  <span class="fw-bold">${{ item.producto.precio | number:'1.2-2' }}</span>
+                </div>
+
+                <!-- Quantity Controls -->
+                <div class="col-md-2">
+                  <div class="input-group input-group-sm">
+                    <button class="btn btn-outline-secondary" 
+                            title="Disminuir cantidad"
+                            aria-label="Disminuir cantidad"
+                            (click)="updateQuantity(item.producto.productoId, item.cantidad - 1)">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" 
+                           class="form-control text-center" 
+                           [value]="item.cantidad"
+                           min="1"
+                           title="Cantidad del producto"
+                           aria-label="Cantidad del producto"
+                           (change)="updateQuantity(item.producto.productoId, +$any($event.target).value)">
+                    <button class="btn btn-outline-secondary"
+                            title="Aumentar cantidad"
+                            aria-label="Aumentar cantidad" 
+                            (click)="updateQuantity(item.producto.productoId, item.cantidad + 1)">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Subtotal -->
+                <div class="col-md-2 text-end">
+                  <span class="fw-bold price-text">
+                    ${{ (item.producto.precio * item.cantidad) | number:'1.2-2' }}
+                  </span>
+                  <br>
+                  <button class="btn btn-sm btn-outline-danger mt-1"
+                          title="Eliminar producto del carrito"
+                          aria-label="Eliminar producto del carrito" 
+                          (click)="removeItem(item.producto.productoId)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Resumen del Pedido</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal:</span>
+              <span>${{ total() | number:'1.2-2' }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Delivery:</span>
+              <span>$5.00</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3">
+              <strong>Total:</strong>
+              <strong class="price-text">${{ (total() + 5) | number:'1.2-2' }}</strong>
+            </div>
+
+            @if (!showCheckoutForm()) {
+              <button class="btn btn-primary btn-lg w-100" (click)="toggleCheckoutForm()">
+                <i class="fas fa-credit-card me-2"></i>
+                Proceder al Checkout
+              </button>
+            } @else {
+              <!-- Checkout Form -->
+              <form [formGroup]="orderForm" (ngSubmit)="processOrder()">
+                <div class="mb-3">
+                  <label for="direccionEntrega" class="form-label">Dirección de Entrega *</label>
+                  <textarea 
+                    id="direccionEntrega"
+                    class="form-control"
+                    [class.is-invalid]="direccionEntrega?.invalid && direccionEntrega?.touched"
+                    formControlName="direccionEntrega"
+                    rows="2"
+                    placeholder="Ingresa tu dirección completa"
+                  ></textarea>
+                  @if (direccionEntrega?.invalid && direccionEntrega?.touched) {
+                    <div class="invalid-feedback">
+                      La dirección de entrega es requerida
+                    </div>
+                  }
+                </div>
+
+                <div class="mb-3">
+                  <label for="observaciones" class="form-label">Observaciones (Opcional)</label>
+                  <textarea 
+                    id="observaciones"
+                    class="form-control"
+                    formControlName="observaciones"
+                    rows="2"
+                    placeholder="Instrucciones especiales para tu pedido"
+                  ></textarea>
+                </div>
+
+                <div class="d-grid gap-2">
+                  <button 
+                    type="submit" 
+                    class="btn btn-success btn-lg"
+                    [disabled]="processingOrder()"
+                  >
+                    @if (processingOrder()) {
+                      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Procesando...
+                    } @else {
+                      <i class="fas fa-check me-2"></i>
+                      Confirmar Pedido
+                    }
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary"
+                    (click)="toggleCheckoutForm()"
+                    [disabled]="processingOrder()"
+                  >
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Volver
+                  </button>
+                </div>
+              </form>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Empty Cart -->
+    <div class="row">
+      <div class="col-12">
+        <div class="text-center py-5">
+          <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+          <h3 class="text-muted">Tu carrito está vacío</h3>
+          <p class="text-muted">Agrega algunos productos deliciosos para comenzar tu pedido</p>
+          <button class="btn btn-primary btn-lg" (click)="continueShopping()">
+            <i class="fas fa-utensils me-2"></i>
+            Explorar Menú
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

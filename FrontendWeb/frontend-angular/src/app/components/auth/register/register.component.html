@@ -1,0 +1,181 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="auth-container">
+    <div class="text-center mb-4">
+      <i class="fas fa-utensils fa-3x text-primary mb-3"></i>
+      <h2 class="fw-bold">Crear Cuenta</h2>
+      <p class="text-muted">Únete a nuestra comunidad gastronómica</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Nombre de Usuario -->
+      <div class="mb-3">
+        <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-user"></i>
+          </span>
+          <input
+            type="text"
+            id="nombreUsuario"
+            class="form-control"
+            [class.is-invalid]="nombreUsuario?.invalid && nombreUsuario?.touched"
+            formControlName="nombreUsuario"
+            placeholder="Tu nombre de usuario"
+          />
+        </div>
+        @if (nombreUsuario?.invalid && nombreUsuario?.touched) {
+          <div class="invalid-feedback d-block">
+            @if (nombreUsuario?.errors?.['required']) {
+              El nombre de usuario es requerido
+            } @else if (nombreUsuario?.errors?.['minlength']) {
+              El nombre debe tener al menos 3 caracteres
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-envelope"></i>
+          </span>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            [class.is-invalid]="email?.invalid && email?.touched"
+            formControlName="email"
+            placeholder="tu@email.com"
+          />
+        </div>
+        @if (email?.invalid && email?.touched) {
+          <div class="invalid-feedback d-block">
+            @if (email?.errors?.['required']) {
+              El correo electrónico es requerido
+            } @else if (email?.errors?.['email']) {
+              Ingresa un correo electrónico válido
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-lock"></i>
+          </span>
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            class="form-control"
+            [class.is-invalid]="password?.invalid && password?.touched"
+            formControlName="password"
+            placeholder="Mínimo 6 caracteres"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="togglePasswordVisibility('password')"
+            title="Mostrar/ocultar contraseña"
+          >
+            <i [class]="showPassword() ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+        @if (password?.invalid && password?.touched) {
+          <div class="invalid-feedback d-block">
+            @if (password?.errors?.['required']) {
+              La contraseña es requerida
+            } @else if (password?.errors?.['minlength']) {
+              La contraseña debe tener al menos 6 caracteres
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-lock"></i>
+          </span>
+          <input
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            id="confirmPassword"
+            class="form-control"
+            [class.is-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+            formControlName="confirmPassword"
+            placeholder="Confirma tu contraseña"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="togglePasswordVisibility('confirmPassword')"
+            title="Mostrar/ocultar confirmación de contraseña"
+          >
+            <i [class]="showConfirmPassword() ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+          </button>
+        </div>
+        @if (confirmPassword?.invalid && confirmPassword?.touched) {
+          <div class="invalid-feedback d-block">
+            @if (confirmPassword?.errors?.['required']) {
+              Debes confirmar tu contraseña
+            } @else if (confirmPassword?.errors?.['passwordMismatch']) {
+              Las contraseñas no coinciden
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Rol -->
+      <div class="mb-3">
+        <label for="rol" class="form-label">Tipo de Cuenta</label>
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-user-tag"></i>
+          </span>
+          <select
+            id="rol"
+            class="form-control"
+            formControlName="rol"
+          >
+            <option value="Cliente">Cliente</option>
+            <option value="Empleado">Empleado</option>
+            <option value="Admin">Administrador</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="d-grid gap-2 mb-3">
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Creando cuenta...
+          } @else {
+            <i class="fas fa-user-plus me-2"></i>
+            Crear Cuenta
+          }
+        </button>
+      </div>
+
+      <!-- Login Link -->
+      <div class="text-center">
+        <p class="mb-0">
+          ¿Ya tienes cuenta? 
+          <a routerLink="/login" class="text-primary text-decoration-none fw-bold">
+            Inicia sesión aquí
+          </a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
